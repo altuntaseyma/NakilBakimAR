@@ -5,12 +5,46 @@ import { allowRoles, authRequired } from "../middleware/auth.js";
 export const patientsRouter = Router();
 patientsRouter.use(authRequired);
 
-patientsRouter.get("/", allowRoles("nurse"), async (req, res) => {
+patientsRouter.get("/me/profile", allowRoles("patient"), async (req, res) => {
   const result = await pool.query(
-    `SELECT pp.*, u.full_name, u.email
+    `SELECT pp.*, u.full_name, u.email,
+            CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase
      FROM patient_profiles pp
      JOIN users u ON u.id = pp.user_id
-     WHERE pp.nurse_id = $1`,
+     WHERE pp.user_id = $1
+     LIMIT 1`,
+    [req.user.id]
+  );
+  res.json(result.rows[0] || null);
+});
+
+patientsRouter.get("/me/modules", allowRoles("patient"), async (req, res) => {
+  const profile = await pool.query(
+    "SELECT id FROM patient_profiles WHERE user_id = $1 LIMIT 1",
+    [req.user.id]
+  );
+  if (!profile.rows[0]) return res.json([]);
+
+  const patientId = profile.rows[0].id;
+  const result = await pool.query(
+    `SELECT cm.id, cm.name, COALESCE(pm.is_enabled, false) AS is_enabled
+     FROM care_modules cm
+     LEFT JOIN patient_modules pm
+       ON pm.module_id = cm.id AND pm.patient_id = $1
+     ORDER BY cm.id`,
+    [patientId]
+  );
+  res.json(result.rows);
+});
+
+patientsRouter.get("/", allowRoles("nurse"), async (req, res) => {
+  const result = await pool.query(
+    `SELECT pp.*, u.full_name, u.email,
+            CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase
+     FROM patient_profiles pp
+     JOIN users u ON u.id = pp.user_id
+     WHERE pp.nurse_id = $1
+     ORDER BY u.full_name ASC`,
     [req.user.id]
   );
   res.json(result.rows);
@@ -24,6 +58,20 @@ patientsRouter.post("/", allowRoles("nurse"), async (req, res) => {
     [userId, diagnosis || null, transplantDate || null, req.user.id]
   );
   res.status(201).json(result.rows[0]);
+});
+
+patientsRouter.put("/:id/operation", allowRoles("nurse"), async (req, res) => {
+  const { transplantDate, setPreOp } = req.body;
+  const value = setPreOp ? null : (transplantDate || null);
+  const result = await pool.query(
+    `UPDATE patient_profiles pp
+     SET transplant_date = $2
+     WHERE pp.id = $1 AND pp.nurse_id = $3
+     RETURNING pp.*, CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase`,
+    [req.params.id, value, req.user.id]
+  );
+  if (!result.rows[0]) return res.status(404).json({ message: "Patient not found" });
+  res.json(result.rows[0]);
 });
 
 patientsRouter.get("/:id/modules", allowRoles("nurse"), async (req, res) => {

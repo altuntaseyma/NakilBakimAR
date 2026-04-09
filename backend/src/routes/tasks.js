@@ -23,6 +23,13 @@ tasksRouter.get("/", async (req, res) => {
 });
 
 tasksRouter.get("/patient/:id", async (req, res) => {
+  if (req.user.role === "patient") {
+    const own = await pool.query(
+      "SELECT id FROM patient_profiles WHERE id = $1 AND user_id = $2 LIMIT 1",
+      [req.params.id, req.user.id]
+    );
+    if (!own.rows[0]) return res.status(403).json({ message: "Forbidden" });
+  }
   const type = req.query.type;
   const params = [req.params.id];
   let sql = "SELECT * FROM tasks WHERE patient_id = $1";
@@ -37,6 +44,22 @@ tasksRouter.get("/patient/:id", async (req, res) => {
 
 tasksRouter.put("/:id", async (req, res) => {
   const t = req.body;
+  if (req.user.role === "patient" && t.isCompleted !== true) {
+    return res.status(403).json({ message: "Patients can only complete tasks" });
+  }
+
+  if (req.user.role === "patient") {
+    const auth = await pool.query(
+      `SELECT t.id
+       FROM tasks t
+       JOIN patient_profiles pp ON pp.id = t.patient_id
+       WHERE t.id = $1 AND pp.user_id = $2
+       LIMIT 1`,
+      [req.params.id, req.user.id]
+    );
+    if (!auth.rows[0]) return res.status(403).json({ message: "Forbidden" });
+  }
+
   const result = await pool.query(
     `UPDATE tasks
      SET title = COALESCE($2, title),

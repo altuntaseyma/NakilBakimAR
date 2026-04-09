@@ -1,11 +1,10 @@
 # NakilBakimAR
 
-Karaciger nakli pre-op ve post-op bakim asistani icin iOS + PostgreSQL backend proje iskeleti.
+Karaciger nakli pre-op ve post-op bakim asistani icin iOS (SwiftUI + ARKit) ve PostgreSQL backend projesi.
 
-## Tamamlanan ilk adimlar
-- `backend` klasorunde Express + JWT + PostgreSQL tabanli MVP endpointleri olusturuldu.
-- Veritabani icin migration ve seed dosyalari eklendi.
-- `NakilBakimAR` klasorunde SwiftUI dosya yapisi ve modern giris ekrani iskeleti olusturuldu.
+## Proje Takip Dokumanlari
+- Adim adim gelistirme plani ve checklist: `docs/PROJECT_STEPS.md`
+- Durum ozeti ve tamamlanan isler: `docs/STATUS.md`
 
 ## Backend calistirma
 1. `backend/.env.example` dosyasini `backend/.env` olarak kopyala.
@@ -18,16 +17,14 @@ Karaciger nakli pre-op ve post-op bakim asistani icin iOS + PostgreSQL backend p
 4. Kontrol: `GET http://localhost:8080/health`
 
 ## iOS onizleme nasil yapilir?
-1. Xcode ile yeni bir iOS App projesi ac ve adini `NakilBakimAR` yap.
-2. Bu depodaki `NakilBakimAR` klasorunun altindaki Swift dosyalarini projeye ekle.
-3. `Signing & Capabilities` altinda camera ve push izinlerini ekleyecegiz (sonraki adim).
+1. Xcode projesini ac: `ios/NakilBakimARios/NakilBakimAR.xcodeproj`
+2. Simulatorde test icin `Constants.swift` icinde API adresini `http://localhost:8080/api` olarak tut.
+3. `Signing & Capabilities` altinda camera ve push izinlerini ekle (AR ve bildirimler icin).
 4. `LoginView` veya `DashboardView` icin Canvas Preview ac:
    - Editorde dosyayi ac
    - `Resume` ile SwiftUI canvas'i calistir
-5. Simulatorde test et:
-   - API base URL `localhost` yerine Mac IP adresi kullan (gercek cihazda zorunlu)
+5. Gercek cihazda test icin API hostunu Mac IP adresine cevir.
 
-## Sonraki adim
-- Nurse/Patient ekranlarinin gercek API baglantilarini tamamlamak
-- AR marker tarama (`ARImageTrackingConfiguration`) ekranini eklemek
-- FCM + email bildirim entegrasyonu
+## Demo Kullanici Bilgileri (Seed)
+- Hemsire: `nurse@nakil.com` / `123456`
+- Hasta: `patient1@nakil.com` / `123456`
