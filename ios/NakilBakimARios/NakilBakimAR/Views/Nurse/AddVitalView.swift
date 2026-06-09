@@ -19,53 +19,83 @@ struct AddVitalView: View {
     @State private var errorText = ""
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Vital Bulgular") {
-                    TextField("Ates (36.7)", text: $temperature)
-                        .keyboardType(.decimalPad)
-                    TextField("Sistolik", text: $systolic)
-                        .keyboardType(.numberPad)
-                    TextField("Diastolik", text: $diastolic)
-                        .keyboardType(.numberPad)
-                    TextField("Nabiz", text: $heartRate)
-                        .keyboardType(.numberPad)
-                    TextField("Oksijen Saturasyonu", text: $oxygen)
-                        .keyboardType(.numberPad)
-                }
+        ZStack {
+            AnimatedBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.large) {
+                    GlassTopBar(
+                        title: "Vital Ekle",
+                        subtitle: patient.fullName ?? "Hasta vital girisi",
+                        icon: "waveform.path.ecg"
+                    )
 
-                Section("Notlar") {
-                    TextField("Klinik not", text: $notes, axis: .vertical)
-                        .lineLimit(3...5)
-                    Toggle("Hastayla paylas", isOn: $sharedWithPatient)
-                }
+                    SurfaceCard {
+                        SectionCardTitle(text: "Vital Bulgular", icon: "waveform.path.ecg")
+                        TextField("Ates (36.7)", text: $temperature)
+                            .keyboardType(.decimalPad)
+                            .glassInputField()
+                        HStack(spacing: AppSpacing.small) {
+                            TextField("Sistolik", text: $systolic)
+                                .keyboardType(.numberPad)
+                                .glassInputField()
+                            TextField("Diastolik", text: $diastolic)
+                                .keyboardType(.numberPad)
+                                .glassInputField()
+                        }
+                        HStack(spacing: AppSpacing.small) {
+                            TextField("Nabız", text: $heartRate)
+                                .keyboardType(.numberPad)
+                                .glassInputField()
+                            TextField("SpO2", text: $oxygen)
+                                .keyboardType(.numberPad)
+                                .glassInputField()
+                        }
+                    }
 
-                Section("Kayit Zamani") {
-                    Toggle("Tarih/Saat sec", isOn: $customRecordTime)
-                    if customRecordTime {
-                        DatePicker("Kayit zamani", selection: $recordDate)
+                    SurfaceCard {
+                        SectionCardTitle(text: "Notlar", icon: "note.text")
+                        TextField("Klinik not", text: $notes, axis: .vertical)
+                            .lineLimit(3...5)
+                            .glassInputField()
+                        Toggle("Hastayla paylas", isOn: $sharedWithPatient)
+                    }
+
+                    SurfaceCard {
+                        SectionCardTitle(text: "Kayit Zamani", icon: "clock.badge.checkmark")
+                        Toggle("Tarih/Saat sec", isOn: $customRecordTime)
+                        if customRecordTime {
+                            DatePicker("Kayit zamani", selection: $recordDate)
+                        }
+                    }
+
+                    if !errorText.isEmpty {
+                        SurfaceCard {
+                            Label(errorText, systemImage: "exclamationmark.triangle.fill")
+                                .font(AppTypography.helper)
+                                .foregroundStyle(InonuPalette.danger)
+                        }
+                    }
+
+                    HStack(spacing: AppSpacing.medium) {
+                        Button("Iptal") { dismiss() }
+                            .buttonStyle(CustomButtonStyle(tint: InonuPalette.deepNavy, isSecondary: true))
+                        Button(loading ? "Kaydediliyor..." : "Kaydet") {
+                            Task { await saveVital() }
+                        }
+                        .disabled(loading || areAllInputsEmpty)
+                        .buttonStyle(CustomButtonStyle())
                     }
                 }
-
-                if !errorText.isEmpty {
-                    Section {
-                        Text(errorText).foregroundStyle(.red)
-                    }
-                }
-            }
-            .navigationTitle("Vital Ekle")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Iptal") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(loading ? "Kaydediliyor..." : "Kaydet") {
-                        Task { await saveVital() }
-                    }
-                    .disabled(loading)
-                }
+                .padding()
             }
         }
+        .navigationTitle("Vital Ekle")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var areAllInputsEmpty: Bool {
+        [temperature, systolic, diastolic, heartRate, oxygen]
+            .allSatisfy { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     }
 
     private func saveVital() async {

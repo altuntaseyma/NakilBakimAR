@@ -29,9 +29,22 @@
 		22056FAD2F86D33900614CF7 /* NakilBakimARUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NakilBakimARUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		226978192F91612E00C03A2E /* Exceptions for "NakilBakimAR" folder in "NakilBakimAR" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 22056F952F86D33700614CF7 /* NakilBakimAR */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		22056F982F86D33800614CF7 /* NakilBakimAR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				226978192F91612E00C03A2E /* Exceptions for "NakilBakimAR" folder in "NakilBakimAR" target */,
+			);
 			path = NakilBakimAR;
 			sourceTree = "<group>";
 		};
@@ -395,8 +408,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DUJBYV45WS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NakilBakimAR/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "AR özellikleri için kameranıza erişim izni gerekiyor.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -407,7 +423,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = new.NakilBakimAR;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seymanuraltuntas.nakilbakimar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -426,8 +442,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DUJBYV45WS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NakilBakimAR/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "AR özellikleri için kameranıza erişim izni gerekiyor.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -438,7 +457,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = new.NakilBakimAR;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seymanuraltuntas.nakilbakimar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

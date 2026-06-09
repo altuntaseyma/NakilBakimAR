@@ -1,0 +1,14 @@
+{
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "resources" : [
+    {
+      "filename" : "ar_exercise_brochure.arreferenceimage"
+    },
+    {
+      "filename" : "ar_medication_box.arreferenceimage"
+    }
+  ]
+}

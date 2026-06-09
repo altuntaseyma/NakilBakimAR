@@ -15,4 +15,12 @@ final class KeychainManager {
         SecItemDelete(query as CFDictionary)
         SecItemAdd(query as CFDictionary, nil)
     }
+
+    func deleteToken() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "nakilbakimar_access_token"
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
 }

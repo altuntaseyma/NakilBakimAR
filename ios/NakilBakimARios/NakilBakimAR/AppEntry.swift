@@ -8,6 +8,7 @@ struct NakilBakimARApp: App {
         WindowGroup {
             LoginView()
                 .environmentObject(api)
+                .preferredColorScheme(.light)
         }
     }
 }

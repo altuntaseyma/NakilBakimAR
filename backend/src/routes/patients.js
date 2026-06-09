@@ -8,7 +8,8 @@ patientsRouter.use(authRequired);
 patientsRouter.get("/me/profile", allowRoles("patient"), async (req, res) => {
   const result = await pool.query(
     `SELECT pp.*, u.full_name, u.email,
-            CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase
+            CASE WHEN pp.transplant_date IS NOT NULL AND pp.transplant_date <= NOW()
+              THEN 'post_op' ELSE 'pre_op' END AS care_phase
      FROM patient_profiles pp
      JOIN users u ON u.id = pp.user_id
      WHERE pp.user_id = $1
@@ -40,7 +41,8 @@ patientsRouter.get("/me/modules", allowRoles("patient"), async (req, res) => {
 patientsRouter.get("/", allowRoles("nurse"), async (req, res) => {
   const result = await pool.query(
     `SELECT pp.*, u.full_name, u.email,
-            CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase
+            CASE WHEN pp.transplant_date IS NOT NULL AND pp.transplant_date <= NOW()
+              THEN 'post_op' ELSE 'pre_op' END AS care_phase
      FROM patient_profiles pp
      JOIN users u ON u.id = pp.user_id
      WHERE pp.nurse_id = $1
@@ -61,13 +63,14 @@ patientsRouter.post("/", allowRoles("nurse"), async (req, res) => {
 });
 
 patientsRouter.put("/:id/operation", allowRoles("nurse"), async (req, res) => {
-  const { transplantDate, setPreOp } = req.body;
-  const value = setPreOp ? null : (transplantDate || null);
+  const { transplantDate } = req.body;
+  const value = transplantDate || null;
   const result = await pool.query(
     `UPDATE patient_profiles pp
      SET transplant_date = $2
      WHERE pp.id = $1 AND pp.nurse_id = $3
-     RETURNING pp.*, CASE WHEN pp.transplant_date IS NULL THEN 'pre_op' ELSE 'post_op' END AS care_phase`,
+     RETURNING pp.*, CASE WHEN pp.transplant_date IS NOT NULL AND pp.transplant_date <= NOW()
+       THEN 'post_op' ELSE 'pre_op' END AS care_phase`,
     [req.params.id, value, req.user.id]
   );
   if (!result.rows[0]) return res.status(404).json({ message: "Patient not found" });

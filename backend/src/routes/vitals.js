@@ -39,6 +39,29 @@ vitalsRouter.get("/patient/:id", async (req, res) => {
   res.json(result.rows);
 });
 
+vitalsRouter.put("/share/:id", async (req, res) => {
+  if (req.user.role !== "nurse") return res.status(403).json({ message: "Forbidden" });
+
+  const sharedWithPatient = req.body?.sharedWithPatient;
+  const shouldUseExplicitValue = typeof sharedWithPatient === "boolean";
+
+  const result = await pool.query(
+    `UPDATE vital_signs
+     SET shared_with_patient = CASE
+       WHEN $2::boolean IS NULL THEN NOT shared_with_patient
+       ELSE $2
+     END
+     WHERE id = $1
+     RETURNING *`,
+    [req.params.id, shouldUseExplicitValue ? sharedWithPatient : null]
+  );
+
+  if (!result.rows[0]) {
+    return res.status(404).json({ message: "Vital kaydi bulunamadi" });
+  }
+  res.json(result.rows[0]);
+});
+
 vitalsRouter.delete("/:id", async (req, res) => {
   if (req.user.role !== "nurse") return res.status(403).json({ message: "Forbidden" });
   await pool.query("DELETE FROM vital_signs WHERE id = $1", [req.params.id]);

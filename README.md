@@ -28,3 +28,8 @@ Karaciger nakli pre-op ve post-op bakim asistani icin iOS (SwiftUI + ARKit) ve P
 ## Demo Kullanici Bilgileri (Seed)
 - Hemsire: `nurse@nakil.com` / `123456`
 - Hasta: `patient1@nakil.com` / `123456`
+- Hasta hizli giris (TC + PIN):
+  - `Demo Patient 1`: `10000000146` / `1001`
+  - `Demo Patient 2`: `10000000214` / `1002`
+  - ...
+  - `Demo Patient 9`: `10000000900` / `1009`

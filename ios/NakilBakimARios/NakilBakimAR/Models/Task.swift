@@ -7,5 +7,6 @@ struct TaskItem: Codable, Identifiable {
     let title: String
     let description: String?
     let scheduledTime: String?
+    let completedAt: String?
     var isCompleted: Bool
 }

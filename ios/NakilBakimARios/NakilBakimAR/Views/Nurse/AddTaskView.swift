@@ -17,42 +17,77 @@ struct AddTaskView: View {
     private let taskTypes = ["exercise", "medication", "nutrition", "wound_care"]
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Gorev Bilgileri") {
-                    Picker("Tip", selection: $type) {
-                        ForEach(taskTypes, id: \.self) { Text($0) }
-                    }
-                    TextField("Baslik", text: $title)
-                    TextField("Aciklama", text: $description, axis: .vertical)
-                        .lineLimit(3...5)
-                }
+        ZStack {
+            AnimatedBackground()
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.large) {
+                    GlassTopBar(
+                        title: "Gorev Ata",
+                        subtitle: patient.fullName ?? "Hasta gorev planlamasi",
+                        icon: "checklist"
+                    )
 
-                Section("Zamanlama") {
-                    Toggle("Planli tarih ekle", isOn: $includeDate)
-                    if includeDate {
-                        DatePicker("Tarih", selection: $scheduledDate)
-                    }
-                }
+                    SurfaceCard {
+                        SectionCardTitle(text: "Gorev Bilgileri", icon: "checklist")
+                        Picker("Tip", selection: $type) {
+                            ForEach(taskTypes, id: \.self) { raw in
+                                Text(displayType(raw)).tag(raw)
+                            }
+                        }
+                        .pickerStyle(.segmented)
 
-                if !errorText.isEmpty {
-                    Section {
-                        Text(errorText).foregroundStyle(.red)
+                        TextField("Baslik", text: $title)
+                            .glassInputField()
+
+                        TextField("Aciklama", text: $description, axis: .vertical)
+                            .lineLimit(3...5)
+                            .glassInputField()
+                    }
+
+                    SurfaceCard {
+                        SectionCardTitle(text: "Zamanlama", icon: "calendar.badge.clock")
+                        Toggle("Planli tarih ekle", isOn: $includeDate)
+                        if includeDate {
+                            DatePicker("Tarih", selection: $scheduledDate)
+                        }
+                    }
+
+                    if !errorText.isEmpty {
+                        SurfaceCard {
+                            Label(errorText, systemImage: "exclamationmark.triangle.fill")
+                                .font(AppTypography.helper)
+                                .foregroundStyle(InonuPalette.danger)
+                        }
+                    }
+
+                    HStack(spacing: AppSpacing.medium) {
+                        Button("Iptal") { dismiss() }
+                            .buttonStyle(CustomButtonStyle(tint: InonuPalette.deepNavy, isSecondary: true))
+                        Button(loading ? "Kaydediliyor..." : "Kaydet") {
+                            Task { await saveTask() }
+                        }
+                        .disabled(loading || isTitleInvalid)
+                        .buttonStyle(CustomButtonStyle())
                     }
                 }
+                .padding()
             }
-            .navigationTitle("Gorev Ata")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Iptal") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(loading ? "Kaydediliyor..." : "Kaydet") {
-                        Task { await saveTask() }
-                    }
-                    .disabled(loading || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
+        }
+        .navigationTitle("Gorev Ata")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var isTitleInvalid: Bool {
+        title.trimmingCharacters(in: .whitespacesAndNewlines).count < 3
+    }
+
+    private func displayType(_ raw: String) -> String {
+        switch raw {
+        case "exercise": return "Egzersiz"
+        case "medication": return "Ilac"
+        case "nutrition": return "Beslenme"
+        case "wound_care": return "Yara Bakımı"
+        default: return raw
         }
     }
 
