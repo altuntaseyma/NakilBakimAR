@@ -50,16 +50,16 @@ struct SurgeryTimeline {
 
     var statusTitle: String {
         if dayOffset < 0 {
-            return "Ameliyata \(preOpDaysLeft) gun kaldi"
+            return "Ameliyata \(preOpDaysLeft) gün kaldı"
         }
-        return "Ameliyat sonrasi \(postOpDay). gundesin"
+        return "Ameliyat sonrası \(postOpDay). gündesin"
     }
 
     var shortLabel: String {
         if dayOffset < 0 {
-            return "Pre-op - \(preOpDaysLeft) gun"
+            return "Pre-op - \(preOpDaysLeft) gün"
         }
-        return "Post-op - Gun \(postOpDay)"
+        return "Post-op - Gün \(postOpDay)"
     }
 
     static func parse(iso: String?) -> SurgeryTimeline? {

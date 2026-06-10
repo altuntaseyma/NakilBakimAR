@@ -5,20 +5,20 @@ struct VitalsHistoryView: View {
 
     var body: some View {
         SurfaceCard {
-            SectionCardTitle(text: "Paylasilan Vital Bulgular", icon: "heart.text.square")
+            SectionCardTitle(text: "Paylaşılan Vital Bulgular", icon: "heart.text.square")
             if api.vitalsLoading && api.vitals.isEmpty {
-                ProgressView("Vital kayitlari yukleniyor...")
+                ProgressView("Vital kayıtları yükleniyor...")
             } else if api.vitals.isEmpty {
-                Text("Paylasilan vital kaydi bulunamadi.")
+                Text("Paylaşılan vital kaydı bulunamadı.")
                     .font(AppTypography.helper)
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(api.vitals.prefix(3)) { vital in
                     VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
                         HStack {
-                            Text("Ates: \(vital.bodyTemperature ?? 0, specifier: "%.1f")")
+                            Text("Ateş: \(vital.bodyTemperature ?? 0, specifier: "%.1f")")
                             Spacer()
-                            Text("Nabiz: \(vital.heartRate ?? 0)")
+                            Text("Nabız: \(vital.heartRate ?? 0)")
                         }
                         HStack {
                             Text("TA: \(vital.bloodPressureSystolic ?? 0)/\(vital.bloodPressureDiastolic ?? 0)")
@@ -26,7 +26,7 @@ struct VitalsHistoryView: View {
                             Text("SpO2: \(vital.oxygenSaturation ?? 0)%")
                         }
                         if let recordedAt = vital.recordedAt, !recordedAt.isEmpty {
-                            Text(recordedAt)
+                            Text(recordedAt.formatIsoDate())
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }

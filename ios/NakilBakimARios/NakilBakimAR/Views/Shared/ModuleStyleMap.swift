@@ -15,7 +15,7 @@ enum ModuleStyleMap {
         case "mobilization":
             return ModuleStyle(
                 title: "Egzersiz & Hareket",
-                subtitle: "Yuruyus ve solunum plani",
+                subtitle: "Yürüyüş ve solunum planı",
                 icon: "figure.walk",
                 accent: InonuPalette.exerciseBlue,
                 lightBg: InonuPalette.exerciseLight,
@@ -32,7 +32,7 @@ enum ModuleStyleMap {
             )
         case "wound_care":
             return ModuleStyle(
-                title: "Yara Bakimi",
+                title: "Yara Bakımı",
                 subtitle: "Pansuman ve kontrol",
                 icon: "bandage.fill",
                 accent: InonuPalette.woundCoral,
@@ -41,7 +41,7 @@ enum ModuleStyleMap {
             )
         case "medication":
             return ModuleStyle(
-                title: "Ilaclarim",
+                title: "İlaçlarım",
                 subtitle: "Doz ve zamanlama",
                 icon: "pills.fill",
                 accent: InonuPalette.medicationPurple,
@@ -51,7 +51,7 @@ enum ModuleStyleMap {
         case "vital_signs":
             return ModuleStyle(
                 title: "Vital Bulgular",
-                subtitle: "Nabiz, tansiyon, ates",
+                subtitle: "Nabız, tansiyon, ateş",
                 icon: "heart.text.square",
                 accent: InonuPalette.vitalRose,
                 lightBg: InonuPalette.vitalLight,
@@ -60,7 +60,7 @@ enum ModuleStyleMap {
         default:
             return ModuleStyle(
                 title: key,
-                subtitle: "Kisisel modul",
+                subtitle: "Kişisel modül",
                 icon: "square.grid.2x2",
                 accent: InonuPalette.primary,
                 lightBg: InonuPalette.cream,

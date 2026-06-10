@@ -3,6 +3,7 @@ import Combine
 
 final class APIService: ObservableObject {
     @Published var currentUser: User?
+    @Published var selectedPatientTab: Int = 0
     @Published var accessToken: String = ""
     @Published var nursePatients: [PatientProfile] = []
     @Published var myProfile: PatientProfile?

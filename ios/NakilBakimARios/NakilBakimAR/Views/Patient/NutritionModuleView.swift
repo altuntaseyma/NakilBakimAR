@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NutritionModuleView: View {
     @EnvironmentObject var api: APIService
+    var isPushed: Bool = false
     @State private var localError = ""
     @State private var waterIntakeMl = 800
     @State private var showDetailedGuide = false
@@ -46,6 +47,7 @@ struct NutritionModuleView: View {
             }
         }
         .navigationTitle("Beslenme")
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .task {
             guard let id = api.myProfile?.id else { return }
             do {

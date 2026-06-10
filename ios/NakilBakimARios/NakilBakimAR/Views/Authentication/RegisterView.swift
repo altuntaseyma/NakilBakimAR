@@ -19,8 +19,8 @@ struct RegisterView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppSpacing.large) {
                     GlassTopBar(
-                        title: "Yeni Hasta Kaydi",
-                        subtitle: "Hasta kullanicisi olusturma",
+                        title: "Yeni Hasta Kaydı",
+                        subtitle: "Hasta kullanıcısı oluşturma",
                         icon: "person.badge.plus"
                     )
 
@@ -31,7 +31,7 @@ struct RegisterView: View {
                             .textInputAutocapitalization(.words)
                             .glassInputField()
 
-                        TextField("T.C. Kimlik Numarasi", text: tcNoBinding)
+                        TextField("T.C. Kimlik Numarası", text: tcNoBinding)
                             .keyboardType(.numberPad)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled(true)
@@ -66,10 +66,10 @@ struct RegisterView: View {
                     }
 
                     HStack(spacing: AppSpacing.medium) {
-                        Button("Vazgec") { dismiss() }
+                        Button("Vazgeç") { dismiss() }
                             .buttonStyle(CustomButtonStyle(tint: InonuPalette.deepNavy, isSecondary: true))
 
-                        Button(loading ? "Olusturuluyor..." : "Hasta Olustur") {
+                        Button(loading ? "Oluşturuluyor..." : "Hasta Oluştur") {
                             Task { await createPatientUser() }
                         }
                         .disabled(loading || !isFormValid)
@@ -79,7 +79,7 @@ struct RegisterView: View {
                 .padding()
             }
         }
-        .navigationTitle("Hasta Kayit")
+        .navigationTitle("Hasta Kaydı")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -102,14 +102,14 @@ struct RegisterView: View {
                 pin: pin,
                 transplantDateISO: includeOperationDate ? ISO8601DateFormatter().string(from: operationDate) : nil
             )
-            infoText = "Hasta kullanicisi basariyla olusturuldu."
+            infoText = "Hasta kullanıcısı başarıyla oluşturuldu."
             fullName = ""
             tcNo = ""
             pin = ""
             includeOperationDate = false
             operationDate = Date()
         } catch {
-            errorText = "Kayit sirasinda hata: \(error.localizedDescription)"
+            errorText = "Kayıt sırasında hata: \(error.localizedDescription)"
         }
     }
 

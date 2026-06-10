@@ -45,7 +45,7 @@ struct BrandHeaderView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(InonuPalette.cream)
-                Text("Logo Yuklenemedi")
+                Text("Logo Yüklenemedi")
                     .font(.caption2.bold())
                     .foregroundStyle(InonuPalette.deepNavy)
             }

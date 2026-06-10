@@ -10,4 +10,5 @@ struct PatientProfile: Codable, Identifiable {
     let fullName: String?
     let email: String?
     let carePhase: String?
+    let lastVitalRecordedAt: String?
 }

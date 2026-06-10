@@ -36,31 +36,22 @@ struct LoginView: View {
     // MARK: - Zemin
     private var zemin: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(hex: "#0A2E3C"), Color(hex: "#0E6B5C")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            Color(hex: "#f0fcfb")
+                .ignoresSafeArea()
 
-            // Dekoratif daireler
+            // Üst sağ spot
             Circle()
-                .fill(Color.white.opacity(0.04))
-                .frame(width: 320)
-                .blur(radius: 1)
-                .offset(x: -100, y: -180)
+                .fill(Color(hex: "#16c8b3").opacity(0.20))
+                .frame(width: 400, height: 400)
+                .blur(radius: 100)
+                .offset(x: 180, y: -250)
 
+            // Alt sol spot
             Circle()
-                .fill(Color(hex: "#0D9B8A").opacity(0.15))
-                .frame(width: 220)
-                .blur(radius: 60)
-                .offset(x: 130, y: 280)
-
-            Circle()
-                .fill(Color.white.opacity(0.03))
-                .frame(width: 260)
-                .blur(radius: 2)
-                .offset(x: 80, y: -300)
+                .fill(Color(hex: "#6cf5df").opacity(0.15))
+                .frame(width: 350, height: 350)
+                .blur(radius: 90)
+                .offset(x: -180, y: 280)
         }
     }
 
@@ -96,25 +87,39 @@ struct LoginView: View {
 
     // MARK: - Logo Alanı
     private var logoAlani: some View {
-        VStack(spacing: 10) {
-            if let img = UIImage(named: "logo-img") {
-                Image(uiImage: img)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 110)
-            } else {
-                Image(systemName: "cross.circle.fill")
-                    .font(.system(size: 52))
-                    .foregroundStyle(.white.opacity(0.9))
-
-                Text("Turgut Özal Tıp Merkezi")
-                    .font(.title3.bold())
-                    .foregroundStyle(.white)
-
-                Text("Karaciğer Nakli Enstitüsü")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+        VStack(spacing: 18) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white.opacity(0.75))
+                    .frame(width: 280, height: 160)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
+                    )
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, y: 5)
+                
+                VStack(spacing: 10) {
+                    if let img = UIImage(named: "logo-img") {
+                        Image(uiImage: img)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 220, height: 95)
+                    } else {
+                        Image(systemName: "cross.circle.fill")
+                            .font(.system(size: 58))
+                            .foregroundStyle(Color(hex: "#006b5f"))
+                    }
+                    
+                    Text("KARACİĞER NAKLİ ENSTİTÜSÜ")
+                        .font(.system(size: 10, weight: .bold))
+                        .tracking(1.0)
+                        .foregroundStyle(Color(hex: "#006b5f"))
+                }
             }
+
+            Text("NakilBakımAR")
+                .font(.title.bold())
+                .foregroundStyle(Color(hex: "#131d1d"))
         }
     }
 
@@ -124,12 +129,12 @@ struct LoginView: View {
 
             // Kart Başlığı
             VStack(alignment: .leading, spacing: 4) {
-                Text("Giriş Yapın")
+                Text("Hoş Geldiniz")
                     .font(.title2.bold())
-                    .foregroundStyle(InonuPalette.deepNavy)
-                Text("Sisteme devam etmek için rolünüzü seçin.")
+                    .foregroundStyle(Color(hex: "#131d1d"))
+                Text("Devam etmek için hesabınızla giriş yapın.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(hex: "#6c7a76"))
             }
 
             // Mod Seçici
@@ -145,14 +150,18 @@ struct LoginView: View {
 
             // Hata
             if !hata.isEmpty {
-                hataGorunu
+                hataGorunumu
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(28)
-        .background(Color.white)
+        .background(Color.white.opacity(0.75))
         .clipShape(RoundedRectangle(cornerRadius: 24))
-        .shadow(color: .black.opacity(0.2), radius: 30, x: 0, y: 16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(Color.white.opacity(0.4), lineWidth: 1.5)
+        )
+        .shadow(color: Color(hex: "#16c8b3").opacity(0.12), radius: 30, x: 0, y: 16)
     }
 
     // MARK: - Mod Seçici
@@ -173,16 +182,16 @@ struct LoginView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 42)
-                    .foregroundStyle(mod == item ? .white : InonuPalette.deepNavy.opacity(0.5))
+                    .foregroundStyle(mod == item ? .white : Color(hex: "#006b5f").opacity(0.6))
                     .background {
                         if mod == item {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(LinearGradient(
-                                    colors: [Color(hex: "#0D9B8A"), Color(hex: "#0A2E3C")],
+                                    colors: [Color(hex: "#006b5f"), Color(hex: "#005047")],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ))
-                                .shadow(color: Color(hex: "#0D9B8A").opacity(0.3), radius: 6, y: 3)
+                                .shadow(color: Color(hex: "#16c8b3").opacity(0.3), radius: 6, y: 3)
                                 .matchedGeometryEffect(id: "mod", in: modNS)
                         }
                     }
@@ -191,7 +200,7 @@ struct LoginView: View {
             }
         }
         .padding(5)
-        .background(Color(hex: "#F0F7F5"))
+        .background(Color(hex: "#eaf6f5"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
@@ -225,7 +234,7 @@ struct LoginView: View {
                     Spacer()
                     ForEach(0..<4, id: \.self) { i in
                         Circle()
-                            .fill(i < pin.count ? InonuPalette.primary : Color(hex: "#E2EBE8"))
+                            .fill(i < pin.count ? Color(hex: "#006b5f") : Color(hex: "#bacac5").opacity(0.4))
                             .frame(width: 10, height: 10)
                             .scaleEffect(i < pin.count ? 1.1 : 1.0)
                             .animation(.spring(response: 0.2), value: pin.count)
@@ -268,25 +277,25 @@ struct LoginView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(etiket)
                 .font(.caption.bold())
-                .foregroundStyle(InonuPalette.navySoft)
+                .foregroundStyle(Color(hex: "#006b5f"))
                 .textCase(.uppercase)
                 .tracking(0.6)
 
             HStack(spacing: 10) {
                 Image(systemName: ikon)
                     .font(.subheadline)
-                    .foregroundStyle(InonuPalette.primary.opacity(0.8))
+                    .foregroundStyle(Color(hex: "#006b5f").opacity(0.8))
                     .frame(width: 20)
 
                 icerik()
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 14)
-            .background(Color(hex: "#F8FBFA"))
+            .background(Color(hex: "#eaf6f5").opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(hex: "#E2EBE8"), lineWidth: 1)
+                    .stroke(Color(hex: "#bacac5").opacity(0.5), lineWidth: 1)
             )
         }
     }
@@ -313,20 +322,20 @@ struct LoginView: View {
             .background(
                 girisGecerliMi
                 ? LinearGradient(
-                    colors: [Color(hex: "#0D9B8A"), Color(hex: "#0A2E3C")],
+                    colors: [Color(hex: "#006b5f"), Color(hex: "#005047")],
                     startPoint: .leading,
                     endPoint: .trailing
                   )
                 : LinearGradient(
-                    colors: [Color(hex: "#C8D8D6"), Color(hex: "#C8D8D6")],
+                    colors: [Color(hex: "#bacac5"), Color(hex: "#bacac5")],
                     startPoint: .leading,
                     endPoint: .trailing
                   )
             )
-            .foregroundStyle(girisGecerliMi ? .white : Color(hex: "#8AADAA"))
+            .foregroundStyle(girisGecerliMi ? .white : Color(hex: "#6c7a76"))
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .shadow(
-                color: girisGecerliMi ? Color(hex: "#0D9B8A").opacity(0.4) : .clear,
+                color: girisGecerliMi ? Color(hex: "#16c8b3").opacity(0.4) : .clear,
                 radius: 10, y: 5
             )
         }
@@ -335,34 +344,34 @@ struct LoginView: View {
     }
 
     // MARK: - Hata Görünümü
-    private var hataGorunu: some View {
+    private var hataGorunumu: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(InonuPalette.danger)
+                .foregroundStyle(Color(hex: "#ba1a1a"))
                 .font(.footnote)
             Text(hata)
                 .font(.footnote)
-                .foregroundStyle(InonuPalette.danger)
+                .foregroundStyle(Color(hex: "#ba1a1a"))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
-        .background(InonuPalette.danger.opacity(0.06))
+        .background(Color(hex: "#ffdad6").opacity(0.6))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(InonuPalette.danger.opacity(0.15), lineWidth: 1)
+                .stroke(Color(hex: "#ba1a1a").opacity(0.25), lineWidth: 1)
         )
     }
 
     // MARK: - Alt Not
     private var altNot: some View {
         VStack(spacing: 4) {
-            Text("İnönü Üniversitesi · Karaciğer Nakli Enstitüsü")
+            Text("© 2026 İnönü Üniversitesi · Karaciğer Nakli Enstitüsü")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.5))
-            Text("© 2026 Malatya, Türkiye")
+                .foregroundStyle(Color(hex: "#6c7a76"))
+            Text("Turgut Özal Tıp Merkezi, Malatya, Türkiye")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(Color(hex: "#6c7a76").opacity(0.7))
         }
         .multilineTextAlignment(.center)
     }

@@ -22,23 +22,36 @@ struct TabBarView: View {
     }
 
     var body: some View {
-        TabView {
+        TabView(selection: $api.selectedPatientTab) {
             if api.currentUser?.role == "nurse" {
                 NavigationStack { PatientList() }
                     .tabItem { Label("Hastalar", systemImage: "person.3.fill") }
+                    .tag(0)
+
+                NavigationStack { NotificationsView() }
+                    .tabItem { Label("Bildirimler", systemImage: "bell.badge.fill") }
+                    .tag(1)
             } else {
-                // Hasta tarafı: sabit 4 tab (taşma yok)
+                // Hasta tarafı
                 NavigationStack { DashboardView() }
                     .tabItem { Label("Ana Sayfa", systemImage: "house.fill") }
+                    .tag(0)
 
                 NavigationStack { MedicationModuleView() }
-                    .tabItem { Label("Ilac", systemImage: "pills.fill") }
+                    .tabItem { Label("İlaç", systemImage: "pills.fill") }
+                    .tag(1)
 
                 NavigationStack { ExerciseModuleView() }
                     .tabItem { Label("Egzersiz", systemImage: "figure.walk") }
+                    .tag(2)
 
                 NavigationStack { NutritionModuleView() }
                     .tabItem { Label("Beslenme", systemImage: "fork.knife") }
+                    .tag(3)
+
+                NavigationStack { NotificationsView() }
+                    .tabItem { Label("Bildirimler", systemImage: "bell.badge.fill") }
+                    .tag(4)
             }
         }
         .tint(InonuPalette.primary)

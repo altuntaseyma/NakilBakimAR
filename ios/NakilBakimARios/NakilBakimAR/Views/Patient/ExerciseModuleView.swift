@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExerciseModuleView: View {
     @EnvironmentObject var api: APIService
+    var isPushed: Bool = false
     @State private var localError = ""
     @State private var animateBreath = false
     @State private var completedBreathRepetitions = 0
@@ -43,6 +44,7 @@ struct ExerciseModuleView: View {
             }
         }
         .navigationTitle("Egzersiz")
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .onAppear {
             withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
                 animateBreath = true
@@ -66,7 +68,7 @@ struct ExerciseModuleView: View {
                     Text("Hareket & Solunum")
                         .font(.title3.bold())
                         .foregroundStyle(.white)
-                    Text(timeline?.statusTitle ?? "Rehabilitasyon plani")
+                    Text(timeline?.statusTitle ?? "Rehabilitasyon planı")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.85))
                 }
@@ -170,7 +172,7 @@ struct ExerciseModuleView: View {
                 }
                 .buttonStyle(CustomButtonStyle(tint: InonuPalette.exerciseBlue, isSecondary: true))
 
-                Button("Seansi Bitir") {
+                Button("Seansı Bitir") {
                     completedBreathSessions += 1
                 }
                 .buttonStyle(CustomButtonStyle(tint: InonuPalette.exerciseBlue))
@@ -181,19 +183,19 @@ struct ExerciseModuleView: View {
     // MARK: - Numbered Exercise Steps (Mockup Style)
     private var exerciseStepsCard: some View {
         SurfaceCard {
-            SectionCardTitle(text: "Hareket Plani", icon: "list.number", color: InonuPalette.exerciseBlue)
+            SectionCardTitle(text: "Hareket Planı", icon: "list.number", color: InonuPalette.exerciseBlue)
 
             VStack(spacing: 0) {
                 exerciseStep(number: 1, title: "Derin Nefes Egzersizi",
-                             desc: "Sirt ustu uzanarak karninizi sisirerek burundan nefes alin, agizdan yavasca verin.")
-                exerciseStep(number: 2, title: "Ayak Bilegi Pompasi",
-                             desc: "Dolasimi artirmak icin ayak bileklerinizi ritmik olarak hareket ettirin.")
-                exerciseStep(number: 3, title: "Diz Bastirma",
-                             desc: "Dizinizin arkasini yataga bastirarak ust bacak kaslarinizi sikin.")
+                             desc: "Sırt üstü uzanarak karnınızı şişirerek burundan nefes alın, ağızdan yavaşça verin.")
+                exerciseStep(number: 2, title: "Ayak Bileği Pompası",
+                             desc: "Dolaşımı artırmak için ayak bileklerinizi ritmik olarak hareket ettirin.")
+                exerciseStep(number: 3, title: "Diz Bastırma",
+                             desc: "Dizinizin arkasını yatağa bastırarak üst bacak kaslarınızı sıkın.")
             }
 
             if let plan = currentPlan.mobilization.first, !plan.isEmpty {
-                Text("Guncel oneri: \(plan)")
+                Text("Güncel öneri: \(plan)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.top, 4)
@@ -228,7 +230,7 @@ struct ExerciseModuleView: View {
     private var taskCard: some View {
         SurfaceCard {
             HStack {
-                SectionCardTitle(text: "Egzersiz Gorevleri", icon: "checklist", color: InonuPalette.exerciseBlue)
+                SectionCardTitle(text: "Egzersiz Görevleri", icon: "checklist", color: InonuPalette.exerciseBlue)
                 Spacer()
                 NavigationLink {
                     ARExperienceView(mode: .mobilization)
@@ -247,7 +249,7 @@ struct ExerciseModuleView: View {
             }
 
             if pendingExerciseTasks.isEmpty {
-                Text("Aktif egzersiz gorevi yok.")
+                Text("Aktif egzersiz görevi yok.")
                     .font(AppTypography.helper)
                     .foregroundStyle(.secondary)
             } else {
@@ -265,7 +267,7 @@ struct ExerciseModuleView: View {
                                     do {
                                         try await api.completeTask(taskId: task.id, patientProfileId: patientId)
                                     } catch {
-                                        localError = "Gorev tamamlanamadi: \(error.localizedDescription)"
+                                        localError = "Görev tamamlanamadı: \(error.localizedDescription)"
                                     }
                                 }
                             }
@@ -281,18 +283,18 @@ struct ExerciseModuleView: View {
     // MARK: - Detailed Care Guide (Collapsible)
     private var detailedCareGuide: some View {
         VStack(spacing: 12) {
-            careGuideSection("Preoperatif Hazirlik", icon: "clipboard", items: [
-                "NPO: Katilar 6-8 saat, berrak sivilar 2-4 saat once kesilir.",
-                "Solunum egzersizi teknigi ameliyat oncesi ogretilir.",
-                "Enfeksiyon odaklari taranir."
+            careGuideSection("Preoperatif Hazırlık", icon: "clipboard", items: [
+                "NPO: Katılar 6-8 saat, berrak sıvılar 2-4 saat önce kesilir.",
+                "Solunum egzersizi tekniği ameliyat öncesi öğretilir.",
+                "Enfeksiyon odakları taranır."
             ])
 
-            careGuideSection("Post-op Bakim Plani", icon: "list.bullet.rectangle", items: currentPlan.mobilization + currentPlan.woundCare.prefix(2))
+            careGuideSection("Post-op Bakım Planı", icon: "list.bullet.rectangle", items: currentPlan.mobilization + currentPlan.woundCare.prefix(2))
 
-            careGuideSection("Kirmizi Bayraklar", icon: "exclamationmark.triangle.fill", items: [
-                "38°C uzeri ates, halsizlik, sarilik",
-                "Yara yerinde kizariklik/kotu koku",
-                "Nefes darligi veya siddetli agri"
+            careGuideSection("Kırmızı Bayraklar", icon: "exclamationmark.triangle.fill", items: [
+                "38°C üzeri ateş, halsizlik, sarılık",
+                "Yara yerinde kızarıklık/kötü koku",
+                "Nefes darlığı veya şiddetli ağrı"
             ], tint: InonuPalette.danger)
         }
     }
@@ -326,24 +328,24 @@ struct ExerciseModuleView: View {
     private var dayFocusLine: String {
         switch selectedPhase {
         case .preOp:
-            return "Pre-op: ameliyat oncesi egitim ve nefes pratigi."
+            return "Pre-op: Ameliyat öncesi eğitim ve nefes pratiği."
         case .day1:
-            return "Kritik faz: saatlik monitorizasyon, yatak ici hareket."
+            return "Kritik faz: Saatlik monitörizasyon, yatak içi hareket."
         case .day2to3:
-            return "Erken toparlanma: yardimla oturma/yurume."
+            return "Erken toparlanma: Yardımla oturma/yürüme."
         case .day4to7:
-            return "Servis fazi: koridor yuruyusleri, drenlerin azalmasi."
+            return "Servis fazı: Koridor yürüyüşleri, drenlerin azalması."
         case .week1to4:
-            return "Taburculuk: evde guvenli aktivite ve yuruyus plani."
+            return "Taburculuk: Evde güvenli aktivite ve yürüyüş planı."
         }
     }
 
     private var breathingSessionTarget: String {
         switch selectedPhase {
-        case .preOp:      return "Gunde 3 deneme seansi"
+        case .preOp:      return "Günde 3 deneme seansı"
         case .day1, .day2to3: return "Saatlik 10 tekrar"
-        case .day4to7:    return "Gunluk 8-10 seans"
-        case .week1to4:   return "Gunde 80+ nefes"
+        case .day4to7:    return "Günlük 8-10 seans"
+        case .week1to4:   return "Günde 80+ nefes"
         }
     }
 
@@ -366,20 +368,20 @@ struct ExerciseModuleView: View {
     private var postOpPlans: [PostOpCarePlan] {
         [
             PostOpCarePlan(phase: .preOp,
-                mobilization: ["Solunum egzersizi teknigi ogretilir.", "Yatak ici guvenli hareket egitimi verilir."],
-                woundCare: ["Cilt hazirligi ve giris bolgeleri bilgilendirilir.", "Enfeksiyon taramasi tamamlanir."]),
+                mobilization: ["Solunum egzersizi tekniği öğretilir.", "Yatak içi güvenli hareket eğitimi verilir."],
+                woundCare: ["Cilt hazırlığı ve giriş bölgeleri bilgilendirilir.", "Enfeksiyon taraması tamamlanır."]),
             PostOpCarePlan(phase: .day1,
-                mobilization: ["Yatak ici pasif ROM egzersizleri.", "Yatak basi 30-45 derece tutulur."],
-                woundCare: ["Pansuman acilmaz; dis sizinti kontrolu yapilir.", "Dren miktari saatlik kaydedilir."]),
+                mobilization: ["Yatak içi pasif ROM egzersizleri.", "Yatak başı 30-45 derece tutulur."],
+                woundCare: ["Pansuman açılmaz; dış sızıntı kontrolü yapılır.", "Dren miktarı saatlik kaydedilir."]),
             PostOpCarePlan(phase: .day2to3,
-                mobilization: ["Yardimla yatak kenarina oturma.", "Hemsire esliginde oda ici yuruyus."],
-                woundCare: ["Ilk steril pansuman degisimi yapilabilir.", "Yara degerlendirmesi yapilir."]),
+                mobilization: ["Yardımla yatak kenarına oturma.", "Hemşire eşliğinde oda içi yürüyüş."],
+                woundCare: ["İlk steril pansuman değişimi yapılabilir.", "Yara değerlendirmesi yapılır."]),
             PostOpCarePlan(phase: .day4to7,
-                mobilization: ["Gunde 3-4 kez koridor yuruyusu.", "SpO2 izlenerek sure artirilir."],
-                woundCare: ["Dren cikisi azaldikca cekim planlanir.", "Yara kuru ve temiz tutulur."]),
+                mobilization: ["Günde 3-4 kez koridor yürüyüşü.", "SpO2 izlenerek süre artırılır."],
+                woundCare: ["Dren çıkışı azaldıkça çekim planlanır.", "Yara kuru ve temiz tutulur."]),
             PostOpCarePlan(phase: .week1to4,
-                mobilization: ["Agir kaldirma yok; yuruyus suresi artirilir.", "Nefes darligi/agrida dur ve bildir."],
-                woundCare: ["Yara yeri gunluk kontrol edilir.", "Poliklinik kontrolleri aksatilmaz."])
+                mobilization: ["Ağır kaldırma yok; yürüyüş süresi artırılır.", "Nefes darlığı/ağrıda dur ve bildir."],
+                woundCare: ["Yara yeri günlük kontrol edilir.", "Poliklinik kontrolleri aksatılmaz."])
         ]
     }
 }

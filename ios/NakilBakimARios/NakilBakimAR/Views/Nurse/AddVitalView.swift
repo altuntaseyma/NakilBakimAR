@@ -25,13 +25,13 @@ struct AddVitalView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.large) {
                     GlassTopBar(
                         title: "Vital Ekle",
-                        subtitle: patient.fullName ?? "Hasta vital girisi",
+                        subtitle: patient.fullName ?? "Hasta vital girişi",
                         icon: "waveform.path.ecg"
                     )
 
                     SurfaceCard {
                         SectionCardTitle(text: "Vital Bulgular", icon: "waveform.path.ecg")
-                        TextField("Ates (36.7)", text: $temperature)
+                        TextField("Ateş (36.7)", text: $temperature)
                             .keyboardType(.decimalPad)
                             .glassInputField()
                         HStack(spacing: AppSpacing.small) {
@@ -57,14 +57,14 @@ struct AddVitalView: View {
                         TextField("Klinik not", text: $notes, axis: .vertical)
                             .lineLimit(3...5)
                             .glassInputField()
-                        Toggle("Hastayla paylas", isOn: $sharedWithPatient)
+                        Toggle("Hastayla paylaş", isOn: $sharedWithPatient)
                     }
 
                     SurfaceCard {
-                        SectionCardTitle(text: "Kayit Zamani", icon: "clock.badge.checkmark")
-                        Toggle("Tarih/Saat sec", isOn: $customRecordTime)
+                        SectionCardTitle(text: "Kayıt Zamanı", icon: "clock.badge.checkmark")
+                        Toggle("Tarih/Saat seç", isOn: $customRecordTime)
                         if customRecordTime {
-                            DatePicker("Kayit zamani", selection: $recordDate)
+                            DatePicker("Kayıt zamanı", selection: $recordDate)
                         }
                     }
 
@@ -77,7 +77,7 @@ struct AddVitalView: View {
                     }
 
                     HStack(spacing: AppSpacing.medium) {
-                        Button("Iptal") { dismiss() }
+                        Button("İptal") { dismiss() }
                             .buttonStyle(CustomButtonStyle(tint: InonuPalette.deepNavy, isSecondary: true))
                         Button(loading ? "Kaydediliyor..." : "Kaydet") {
                             Task { await saveVital() }
@@ -116,7 +116,7 @@ struct AddVitalView: View {
             )
             dismiss()
         } catch {
-            errorText = "Vital kaydi olusturulamadi: \(error.localizedDescription)"
+            errorText = "Vital kaydı oluşturulamadı: \(error.localizedDescription)"
         }
     }
 }

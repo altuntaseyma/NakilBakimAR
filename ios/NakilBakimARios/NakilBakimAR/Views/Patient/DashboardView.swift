@@ -92,7 +92,7 @@ struct DashboardView: View {
         return SurfaceCard(accentColor: InonuPalette.primary) {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("GENEL SAGLIK SKORU")
+                    Text("GENEL SAĞLIK SKORU")
                         .font(.caption.bold())
                         .tracking(0.8)
                         .foregroundStyle(.secondary)
@@ -107,7 +107,7 @@ struct DashboardView: View {
                         color: isPostOp ? InonuPalette.primary : InonuPalette.info
                     )
                     if let summary {
-                        Text("\(summary.correctDecisions ?? 0) dogru karar")
+                        Text("\(summary.correctDecisions ?? 0) doğru karar")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -141,7 +141,7 @@ struct DashboardView: View {
         let exerciseCount = api.tasks.filter { $0.type == "exercise" && !$0.isCompleted }.count
 
         return HStack(spacing: 10) {
-            quickStatItem("Ilac", "\(medCount)", InonuPalette.medicationPurple)
+            quickStatItem("İlaç", "\(medCount)", InonuPalette.medicationPurple)
             quickStatItem("Egzersiz", "\(exerciseCount)", InonuPalette.exerciseBlue)
             quickStatItem("Beslenme", "\(nutritionCount)", InonuPalette.nutritionOrange)
         }
@@ -184,19 +184,63 @@ struct DashboardView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(api.patientModules.filter(\.isEnabled)) { module in
                         let style = ModuleStyleMap.style(for: module.name)
-                        NavigationLink {
-                            moduleDestination(for: module.name)
-                        } label: {
-                            ModuleCard(
-                                title: style.title,
-                                subtitle: style.subtitle,
-                                icon: style.icon,
-                                accentColor: style.accent,
-                                lightBg: style.lightBg,
-                                isInteractive: true
-                            )
+                        if module.name == "medication" {
+                            Button {
+                                api.selectedPatientTab = 1
+                            } label: {
+                                ModuleCard(
+                                    title: style.title,
+                                    subtitle: style.subtitle,
+                                    icon: style.icon,
+                                    accentColor: style.accent,
+                                    lightBg: style.lightBg,
+                                    isInteractive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else if module.name == "mobilization" {
+                            Button {
+                                api.selectedPatientTab = 2
+                            } label: {
+                                ModuleCard(
+                                    title: style.title,
+                                    subtitle: style.subtitle,
+                                    icon: style.icon,
+                                    accentColor: style.accent,
+                                    lightBg: style.lightBg,
+                                    isInteractive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else if module.name == "nutrition" {
+                            Button {
+                                api.selectedPatientTab = 3
+                            } label: {
+                                ModuleCard(
+                                    title: style.title,
+                                    subtitle: style.subtitle,
+                                    icon: style.icon,
+                                    accentColor: style.accent,
+                                    lightBg: style.lightBg,
+                                    isInteractive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            NavigationLink {
+                                moduleDestination(for: module.name)
+                            } label: {
+                                ModuleCard(
+                                    title: style.title,
+                                    subtitle: style.subtitle,
+                                    icon: style.icon,
+                                    accentColor: style.accent,
+                                    lightBg: style.lightBg,
+                                    isInteractive: true
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -255,23 +299,23 @@ struct DashboardView: View {
     private func moduleDestination(for moduleName: String) -> some View {
         switch moduleName {
         case "mobilization":
-            ExerciseModuleView()
+            ExerciseModuleView(isPushed: false)
         case "nutrition":
-            NutritionModuleView()
+            NutritionModuleView(isPushed: false)
         case "wound_care":
-            WoundCareModuleView()
+            WoundCareModuleView(isPushed: false)
         case "medication":
-            MedicationModuleView()
+            MedicationModuleView(isPushed: false)
         case "vital_signs":
-            VitalSignsModuleView()
+            VitalSignsModuleView(isPushed: false)
         default:
-            EmptyStateCard(title: "Modul bulunamadi", subtitle: "Bu modul icin ekran tanimi eksik.")
+            EmptyStateCard(title: "Modül bulunamadı", subtitle: "Bu modül için ekran tanımı eksik.")
         }
     }
 
     // MARK: - Helpers
     private func weeklyBars() -> [(day: String, count: Int)] {
-        let labels = ["Pzt", "Sal", "Car", "Per", "Cum", "Cmt", "Paz"]
+        let labels = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
         var counts = Array(repeating: 0, count: 7)
         let parser = ISO8601DateFormatter()
 
@@ -293,6 +337,7 @@ struct DashboardView: View {
 // MARK: - Wound Care Module View
 struct WoundCareModuleView: View {
     @EnvironmentObject var api: APIService
+    var isPushed: Bool = false
     @State private var screenError = ""
 
     private var woundTasks: [TaskItem] {
@@ -333,11 +378,11 @@ struct WoundCareModuleView: View {
                     }
 
                     SurfaceCard(accentColor: InonuPalette.woundCoral) {
-                        SectionCardTitle(text: "Yara Bakimi Takibi", icon: "cross.vial", color: InonuPalette.woundCoral)
+                        SectionCardTitle(text: "Yara Bakımı Takibi", icon: "cross.vial", color: InonuPalette.woundCoral)
                         if api.tasksLoading && woundTasks.isEmpty {
                             ProgressView("Görevler yükleniyor...")
                         } else if woundTasks.isEmpty {
-                            Text("Bu modul icin yara bakimi gorevi bulunamadi.")
+                            Text("Bu modül için yara bakımı görevi bulunamadı.")
                                 .font(AppTypography.helper)
                                 .foregroundStyle(.secondary)
                         } else {
@@ -369,6 +414,7 @@ struct WoundCareModuleView: View {
             }
         }
         .navigationTitle("Yara Bakımı")
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .task {
             guard let id = api.myProfile?.id else { return }
             do {
@@ -386,7 +432,7 @@ struct WoundCareModuleView: View {
                     Text("Pansuman ve Kontrol")
                         .font(.title3.bold())
                         .foregroundStyle(.white)
-                    Text("Yara durumu ve bakim adimlari")
+                    Text("Yara durumu ve bakım adımları")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.9))
                 }
@@ -406,7 +452,7 @@ struct WoundCareModuleView: View {
                         do {
                             try await api.completeTask(taskId: next.id, patientProfileId: patientId)
                         } catch {
-                            screenError = "Yara bakimi gorevi tamamlanamadi: \(error.localizedDescription)"
+                            screenError = "Yara bakımı görevi tamamlanamadı: \(error.localizedDescription)"
                         }
                     }
                 } label: {
@@ -460,6 +506,7 @@ struct WoundCareModuleView: View {
 // MARK: - Vital Signs Module View
 struct VitalSignsModuleView: View {
     @EnvironmentObject var api: APIService
+    var isPushed: Bool = false
     @State private var screenError = ""
     @State private var showAllVitals = false
 
@@ -470,25 +517,25 @@ struct VitalSignsModuleView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.large) {
                     GlassTopBar(
                         title: "Vital Bulgular",
-                        subtitle: "Paylasilan olcumlerin detayli gorunumu",
+                        subtitle: "Paylaşılan ölçümlerin detaylı görünümü",
                         icon: "heart.text.square",
                         accentColor: InonuPalette.vitalRose
                     )
                     vitalHeroCard
 
                     SurfaceCard(accentColor: InonuPalette.vitalRose) {
-                        SectionCardTitle(text: "Son Olcumler", icon: "waveform.path.ecg", color: InonuPalette.vitalRose)
+                        SectionCardTitle(text: "Son Ölçümler", icon: "waveform.path.ecg", color: InonuPalette.vitalRose)
                         if api.vitalsLoading && api.vitals.isEmpty {
-                            ProgressView("Vital kayitlari yukleniyor...")
+                            ProgressView("Vital kayıtları yükleniyor...")
                         } else if api.vitals.isEmpty {
-                            Text("Paylasilan vital kaydi bulunamadi.")
+                            Text("Paylaşılan vital kaydı bulunamadı.")
                                 .font(AppTypography.helper)
                                 .foregroundStyle(.secondary)
                         } else {
                             ForEach(displayedVitals) { vital in
                                 VStack(alignment: .leading, spacing: 6) {
                                     HStack {
-                                        vitalItem("Ates", String(format: "%.1f°C", vital.bodyTemperature ?? 0))
+                                        vitalItem("Ateş", String(format: "%.1f°C", vital.bodyTemperature ?? 0))
                                         Spacer()
                                         vitalItem("Nabız", "\(vital.heartRate ?? 0)")
                                     }
@@ -498,7 +545,7 @@ struct VitalSignsModuleView: View {
                                         vitalItem("SpO2", "\(vital.oxygenSaturation ?? 0)%")
                                     }
                                     if let recordedAt = vital.recordedAt {
-                                        Text(recordedAt)
+                                        Text(recordedAt.formatIsoDate())
                                             .font(AppTypography.caption)
                                             .foregroundStyle(.secondary)
                                     }
@@ -506,7 +553,7 @@ struct VitalSignsModuleView: View {
                                 }
                             }
 
-                            Button(showAllVitals ? "Ozet Liste" : "Tumunu Goster") {
+                            Button(showAllVitals ? "Özet Liste" : "Tümünü Göster") {
                                 withAnimation(.easeInOut(duration: 0.2)) {
                                     showAllVitals.toggle()
                                 }
@@ -528,6 +575,7 @@ struct VitalSignsModuleView: View {
             }
         }
         .navigationTitle("Vital Bulgular")
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .task {
             guard let id = api.myProfile?.id else { return }
             do {
@@ -554,10 +602,10 @@ struct VitalSignsModuleView: View {
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Vital Durum Ozeti")
+                    Text("Vital Durum Özeti")
                         .font(.title3.bold())
                         .foregroundStyle(.white)
-                    Text("Son paylasilan vital degerler")
+                    Text("Son paylaşılan vital değerler")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.9))
                 }
@@ -567,7 +615,7 @@ struct VitalSignsModuleView: View {
                     .foregroundStyle(.white.opacity(0.9))
             }
             HStack(spacing: 8) {
-                MetricPill(title: "Ates", value: String(format: "%.1f°C", latest?.bodyTemperature ?? 0))
+                MetricPill(title: "Ateş", value: String(format: "%.1f°C", latest?.bodyTemperature ?? 0))
                 MetricPill(title: "Nabız", value: "\(latest?.heartRate ?? 0)")
                 MetricPill(title: "SpO2", value: "\(latest?.oxygenSaturation ?? 0)%")
             }
@@ -578,7 +626,7 @@ struct VitalSignsModuleView: View {
                     do {
                         try await api.fetchVitals(patientProfileId: id)
                     } catch {
-                        screenError = "Vital kayitlari yenilenemedi: \(error.localizedDescription)"
+                        screenError = "Vital kayıtları yenilenemedi: \(error.localizedDescription)"
                     }
                 }
             } label: {

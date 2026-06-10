@@ -41,6 +41,7 @@ patientsRouter.get("/me/modules", allowRoles("patient"), async (req, res) => {
 patientsRouter.get("/", allowRoles("nurse"), async (req, res) => {
   const result = await pool.query(
     `SELECT pp.*, u.full_name, u.email,
+            (SELECT MAX(recorded_at) FROM vital_signs WHERE patient_id = pp.id) AS last_vital_recorded_at,
             CASE WHEN pp.transplant_date IS NOT NULL AND pp.transplant_date <= NOW()
               THEN 'post_op' ELSE 'pre_op' END AS care_phase
      FROM patient_profiles pp

@@ -1,6 +1,7 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import Combine
 
 // MARK: - ARExperienceView
 
@@ -63,6 +64,7 @@ struct ARExperienceView: View {
                 ARContainerView(
                     mode: mode,
                     hasPendingMedication: hasPendingMedication,
+                    detectedExerciseIndex: detectedExerciseIndex,
                     onMarkerDetected: { exerciseIdx in
                         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                             markerDetected = true
@@ -90,6 +92,7 @@ struct ARExperienceView: View {
                 topHUD
                 Spacer()
                 bottomPanel
+                    .padding(.bottom, 90) // Tab Bar ile çakışmaması için pay eklendi
             }
             .ignoresSafeArea(edges: .bottom)
 
@@ -526,56 +529,111 @@ struct ARExperienceView: View {
     }
 
     var exerciseSteps: [ExerciseStep] {
-        [
-            ExerciseStep(
-                name: "Omuz Rotasyonu",
-                shortName: "Omuz",
-                description: "Omuzlarınızı yavaşça öne ve arkaya döndürün. Kasları gevşetir.",
-                icon: "arrow.clockwise",
-                sets: "3 set",
-                reps: "10 tekrar"
-            ),
-            ExerciseStep(
-                name: "Derin Nefes",
-                shortName: "Nefes",
-                description: "Burnunuzdan 3-4 sn alın, 2 sn tutun, 4-6 sn ağızdan verin.",
-                icon: "wind",
-                sets: "3 seans",
-                reps: "10 nefes"
-            ),
-            ExerciseStep(
-                name: "Kol Germe",
-                shortName: "Kol",
-                description: "Kolunuzu yanlara açın, 15 saniye tutun. Gerginliği hissedin.",
-                icon: "figure.arms.open",
-                sets: "2 set",
-                reps: "15 sn tutun"
-            ),
-            ExerciseStep(
-                name: "Diz Pompası",
-                shortName: "Diz",
-                description: "Oturarak ayak bileklerinizi yukarı kaldırıp indirin. Dolaşımı artırır.",
-                icon: "figure.seated.seatbelt",
-                sets: "3 set",
-                reps: "20 tekrar"
-            ),
-            ExerciseStep(
-                name: "Oturma / Kalkma",
-                shortName: "Kalkış",
-                description: "Sandalyeden desteksiz kalkın ve oturun. Denge ve güç kazandırır.",
-                icon: "figure.stand",
-                sets: "3 set",
-                reps: "8 tekrar"
-            ),
-            ExerciseStep(
-                name: "Yürüyüş",
-                shortName: "Yürüyüş",
-                description: "Gün içinde düzenli koridorda yürüyüş yapın. Süreyi kademeli artırın.",
-                icon: "figure.walk",
-                sets: "Günde 3 kez",
-                reps: "5-10 dk"
-            ),
-        ]
+        switch mode {
+        case .mobilization:
+            return [
+                ExerciseStep(
+                    name: "Üst Beden Sağ-Sol",
+                    shortName: "Gövde",
+                    description: "Üst bedeninizi yavaşça sağa ve sola çevirin. Hareketi kontrollü yapın.",
+                    icon: "arrow.left.and.right",
+                    sets: "3 set",
+                    reps: "10 tekrar"
+                ),
+                ExerciseStep(
+                    name: "Derin Nefes",
+                    shortName: "Nefes",
+                    description: "Burnunuzdan 3-4 sn alın, 2 sn tutun, 4-6 sn ağızdan verin.",
+                    icon: "wind",
+                    sets: "3 seans",
+                    reps: "10 nefes"
+                ),
+                ExerciseStep(
+                    name: "Kol Germe",
+                    shortName: "Kol",
+                    description: "Kolunuzu yanlara açın, 15 saniye tutun. Gerginliği hissedin.",
+                    icon: "figure.arms.open",
+                    sets: "2 set",
+                    reps: "15 sn tutun"
+                ),
+                ExerciseStep(
+                    name: "Diz Pompası",
+                    shortName: "Diz",
+                    description: "Oturarak ayak bileklerinizi yukarı kaldırıp indirin. Dolaşımı artırır.",
+                    icon: "figure.seated.seatbelt",
+                    sets: "3 set",
+                    reps: "20 tekrar"
+                ),
+                ExerciseStep(
+                    name: "Oturma / Kalkma",
+                    shortName: "Kalkış",
+                    description: "Sandalyeden desteksiz kalkın ve oturun. Denge ve güç kazandırır.",
+                    icon: "figure.stand",
+                    sets: "3 set",
+                    reps: "8 tekrar"
+                ),
+                ExerciseStep(
+                    name: "Yürüyüş",
+                    shortName: "Yürüyüş",
+                    description: "Gün içinde düzenli koridorda yürüyüş yapın. Süreyi kademeli artırın.",
+                    icon: "figure.walk",
+                    sets: "Günde 3 kez",
+                    reps: "5-10 dk"
+                ),
+            ]
+
+        case .medication:
+            return [
+                ExerciseStep(
+                    name: "Sabah Dozu — Takrolimus",
+                    shortName: "Takrolimus",
+                    description: "Sabah aç karnına alınır. Greyfurt suyu ile alınmamalıdır. Kan düzeyi düzenli izlenir.",
+                    icon: "pill.fill",
+                    sets: "Günde 2 kez",
+                    reps: "08:00 / 20:00"
+                ),
+                ExerciseStep(
+                    name: "Mikofenolat Mofetil",
+                    shortName: "MMF",
+                    description: "Yemekle birlikte alınır. Mide bulantısı oluşursa hemşireye bildiriniz.",
+                    icon: "capsule.fill",
+                    sets: "Günde 2 kez",
+                    reps: "08:00 / 20:00"
+                ),
+                ExerciseStep(
+                    name: "Prednizolon",
+                    shortName: "Prednizolon",
+                    description: "Kahvaltıyla birlikte alınır. Kan şekeri izlemi gerektirir.",
+                    icon: "pill.circle.fill",
+                    sets: "Günde 1 kez",
+                    reps: "08:00"
+                ),
+                ExerciseStep(
+                    name: "Antiviral Profilaksi",
+                    shortName: "Antiviral",
+                    description: "Valgansiklovir öğle yemeğiyle alınır. CMV enfeksiyonuna karşı koruyucudur.",
+                    icon: "shield.fill",
+                    sets: "Günde 1 kez",
+                    reps: "12:00"
+                ),
+                ExerciseStep(
+                    name: "Antibiyotik Profilaksi",
+                    shortName: "Antibiyotik",
+                    description: "TMP-SMX haftada 3 gün (Pazartesi-Çarşamba-Cuma) alınır.",
+                    icon: "cross.fill",
+                    sets: "Haftada 3 kez",
+                    reps: "10:00"
+                ),
+                ExerciseStep(
+                    name: "Mide Koruyucu",
+                    shortName: "Omeprazol",
+                    description: "Kahvaltıdan 30 dk önce alınır. Mide asiditesini dengeler.",
+                    icon: "heart.fill",
+                    sets: "Günde 1 kez",
+                    reps: "07:30"
+                ),
+            ]
+        }
     }
 }
 
@@ -667,6 +725,7 @@ private enum HapticEngine {
 private struct ARContainerView: UIViewRepresentable {
     let mode: ARExperienceView.ScenarioMode
     let hasPendingMedication: Bool
+    let detectedExerciseIndex: Int
     let onMarkerDetected: (Int) -> Void
     let onMarkerLost: () -> Void
 
@@ -674,10 +733,10 @@ private struct ARContainerView: UIViewRepresentable {
         let arView = ARView(frame: .zero)
         arView.renderOptions = [.disableMotionBlur, .disableDepthOfField]
         context.coordinator.arView = arView
-
+        
         let config = ARImageTrackingConfiguration()
         config.maximumNumberOfTrackedImages = 2
-
+        
         if let group = ARReferenceImage.referenceImages(inGroupNamed: "ReferenceImages", bundle: .main),
            !group.isEmpty {
             config.trackingImages = group
@@ -691,6 +750,10 @@ private struct ARContainerView: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {
         context.coordinator.hasPendingMedication = hasPendingMedication
         context.coordinator.mode = mode
+        
+        if context.coordinator.currentExerciseIndex != detectedExerciseIndex {
+            context.coordinator.updateExercise(to: detectedExerciseIndex)
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -712,9 +775,22 @@ private struct ARContainerView: UIViewRepresentable {
         weak var arView: ARView?
 
         // Hangi egzersizin şu an gösterildiğini takip et
-        private var currentExerciseIndex = 0
+        var currentExerciseIndex = 0
         private var detectedAnchors: [UUID: AnchorEntity] = [:]
         private var floatTimer: Timer?
+        
+        // Dinamik güncellemeler için referanslar
+        private var exerciseAnimTimer: Timer?
+        private var currentExerciseVisuals: Entity?
+        private var cosmonautEntity: Entity?
+        private var cancellables = Set<AnyCancellable>()
+        
+        private let targetModelSize: Float = 0.10
+        
+        // Base transform for reset
+        private var basePosition: SIMD3<Float> = .zero
+        private var baseScale: SIMD3<Float> = .one
+        private var baseOrientation: simd_quatf = simd_quatf(angle: 0, axis: [1, 0, 0])
 
         init(
             mode: ARExperienceView.ScenarioMode,
@@ -768,12 +844,18 @@ private struct ARContainerView: UIViewRepresentable {
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
                 guard let imageAnchor = anchor as? ARImageAnchor else { continue }
-                if !imageAnchor.isTracked {
-                    if let entity = detectedAnchors[anchor.identifier] {
-                        arView?.scene.removeAnchor(entity)
-                        detectedAnchors.removeValue(forKey: anchor.identifier)
+                if let entity = detectedAnchors[anchor.identifier] {
+                    if imageAnchor.isTracked {
+                        if !entity.isEnabled {
+                            entity.isEnabled = true
+                            DispatchQueue.main.async { self.onMarkerDetected(self.currentExerciseIndex) }
+                        }
+                    } else {
+                        if entity.isEnabled {
+                            entity.isEnabled = false
+                            DispatchQueue.main.async { self.onMarkerLost() }
+                        }
                     }
-                    DispatchQueue.main.async { self.onMarkerLost() }
                 }
             }
         }
@@ -781,66 +863,286 @@ private struct ARContainerView: UIViewRepresentable {
         // MARK: - Exercise Overlay Builder
 
         private func buildExerciseOverlay(on anchor: AnchorEntity, index: Int) {
-            // --- Arka plan panel (ince beyaz kutu) ---
-            let panelMesh = MeshResource.generatePlane(width: 0.18, depth: 0.10)
-            var panelMat = UnlitMaterial()
-            panelMat.color = .init(tint: UIColor.white.withAlphaComponent(0.92))
-            let panelEntity = ModelEntity(mesh: panelMesh, materials: [panelMat])
-            panelEntity.position = [0, 0.001, -0.06]
-            panelEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
-            anchor.addChild(panelEntity)
 
-            // --- Başlık metni ---
-            let exercises = ["Omuz Rotasyonu", "Derin Nefes", "Kol Germe",
-                             "Diz Pompasi", "Oturma/Kalkma", "Yuruyus"]
-            let reps = ["10 tekrar x 3 set", "10 nefes x 3 seans", "15 sn tutun x 2",
-                        "20 tekrar x 3 set", "8 tekrar x 3 set", "5-10 dk x 3 kez"]
+            // --- Human Yükle (Async) ---
+            Entity.loadAsync(named: "human")
+                .sink(receiveCompletion: { [weak self] completion in
+                    if case let .failure(error) = completion {
+                        print("Human yuklenemedi: \(error)")
+                        DispatchQueue.main.async {
+                            let errorLabel = UILabel(frame: CGRect(x: 20, y: 150, width: 350, height: 200))
+                            errorLabel.numberOfLines = 0
+                            errorLabel.text = "⚠️ MODEL YÜKLENEMEDİ:\n\(error.localizedDescription)"
+                            errorLabel.textColor = .white
+                            errorLabel.backgroundColor = .red
+                            errorLabel.font = .boldSystemFont(ofSize: 16)
+                            self?.arView?.addSubview(errorLabel)
+                        }
+                    }
+                }, receiveValue: { [weak self, weak anchor] human in
+                    guard let self = self, let anchor = anchor else { return }
 
-            let titleStr = "  \(index + 1). \(exercises[min(index, exercises.count - 1)])"
-            let titleMesh = MeshResource.generateText(
-                titleStr,
-                extrusionDepth: 0.001,
-                font: .boldSystemFont(ofSize: 0.013),
-                containerFrame: .zero,
-                alignment: .left,
-                lineBreakMode: .byWordWrapping
-            )
-            let accentColor = UIColor(red: 0.22, green: 0.52, blue: 0.85, alpha: 1)
-            var titleMat = UnlitMaterial()
-            titleMat.color = .init(tint: accentColor)
-            let titleEntity = ModelEntity(mesh: titleMesh, materials: [titleMat])
-            titleEntity.position = [-0.085, 0.003, -0.04]
-            titleEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
-            anchor.addChild(titleEntity)
+                    // 1) Wrapper oluştur
+                    let wrapper = Entity()
+                    wrapper.position = [0, 0.03, -0.02]
+                    wrapper.orientation = simd_quatf(angle: 0, axis: [1, 0, 0])
+                    anchor.addChild(wrapper)
 
-            // --- Alt bilgi metni ---
-            let repStr = "  ⏱ \(reps[min(index, reps.count - 1)])"
-            let repMesh = MeshResource.generateText(
-                repStr,
-                extrusionDepth: 0.001,
-                font: .systemFont(ofSize: 0.010),
-                containerFrame: .zero,
-                alignment: .left,
-                lineBreakMode: .byWordWrapping
-            )
-            var repMat = UnlitMaterial()
-            repMat.color = .init(tint: UIColor.darkGray)
-            let repEntity = ModelEntity(mesh: repMesh, materials: [repMat])
-            repEntity.position = [-0.085, 0.003, -0.02]
-            repEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
-            anchor.addChild(repEntity)
+                    self.basePosition = wrapper.position
+                    self.baseScale = wrapper.scale
+                    self.baseOrientation = wrapper.orientation
 
-            // --- Animasyonlu halka (pulsating ring) ---
-            let ringMesh = MeshResource.generateText("◎", extrusionDepth: 0.001, font: .boldSystemFont(ofSize: 0.020))
-            var ringMat = UnlitMaterial()
-            ringMat.color = .init(tint: accentColor.withAlphaComponent(0.5))
-            let ringEntity = ModelEntity(mesh: ringMesh, materials: [ringMat])
-            ringEntity.position = [0.06, 0.002, -0.06]
-            ringEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
-            anchor.addChild(ringEntity)
+                    // 2) Modeli sıfırla ve başaşağı durmayı düzelt (180 derece döndür)
+                    human.position = .zero
+                    human.scale = SIMD3<Float>(repeating: 1.0)
+                    human.orientation = simd_quatf(angle: .pi, axis: [1, 0, 0])
 
-            // Pulsating animasyon
-            animatePulse(entity: ringEntity)
+                    // 3) Model sadece wrapper içine eklensin
+                    wrapper.addChild(human)
+
+                    // 4) Modelin gerçek sınırlarını hesapla
+                    let rawBounds = human.visualBounds(relativeTo: wrapper)
+
+                    print("RAW BOUNDS center:", rawBounds.center)
+                    print("RAW BOUNDS extents:", rawBounds.extents)
+
+                    // 5) Y, Z karışmasın diye en büyük boyutu baz al
+                    let maxDimension = max(rawBounds.extents.x, rawBounds.extents.y, rawBounds.extents.z)
+
+                    let dynamicScale: Float
+                    if maxDimension > 0.001 {
+                        dynamicScale = self.targetModelSize / maxDimension
+                    } else {
+                        dynamicScale = 0.01
+                    }
+
+                    human.scale = SIMD3<Float>(repeating: dynamicScale)
+
+                    // 6) Scale sonrası tekrar bounds al
+                    let scaledBounds = human.visualBounds(relativeTo: wrapper)
+
+                    // 7) Modelin merkezini wrapper merkezine çek
+                    human.position.x -= scaledBounds.center.x
+                    human.position.y -= scaledBounds.center.y
+                    human.position.z -= scaledBounds.center.z
+
+                    // 8) Alt kısmı broşürün üstüne kaldır
+                    let finalBounds = human.visualBounds(relativeTo: wrapper)
+                    let bottomY = finalBounds.center.y - finalBounds.extents.y / 2
+                    human.position.y -= bottomY
+                    human.position.y += 0.005
+
+                    self.cosmonautEntity = wrapper
+                })
+                .store(in: &cancellables)
+            
+            // Ilk metinleri guncelle
+            updateExercise(to: index)
+        }
+        
+        func updateExercise(to index: Int) {
+            currentExerciseIndex = index
+            if cosmonautEntity != nil {
+                stopCurrentExerciseAnimation()
+                resetHumanTransform()
+                
+                switch index {
+                case 0:
+                    startUpperBodySideToSideAnimation()
+                case 1:
+                    startBreathingAnimation()
+                case 2:
+                    startArmStretchAnimation()
+                case 3:
+                    startKneePumpAnimation()
+                case 4:
+                    startSitStandAnimation()
+                case 5:
+                    startWalkingAnimation()
+                default:
+                    startUpperBodySideToSideAnimation()
+                }
+            }
+        }
+        
+        private func stopCurrentExerciseAnimation() {
+            exerciseAnimTimer?.invalidate()
+            exerciseAnimTimer = nil
+        }
+        
+        private func resetHumanTransform() {
+            guard let humanWrapper = cosmonautEntity else { return }
+            humanWrapper.position = basePosition
+            humanWrapper.scale = baseScale
+            humanWrapper.orientation = baseOrientation
+            
+            currentExerciseVisuals?.removeFromParent()
+            currentExerciseVisuals = nil
+        }
+        
+        private func setupVisualContainer() -> Entity {
+            let container = Entity()
+            cosmonautEntity?.addChild(container)
+            currentExerciseVisuals = container
+            return container
+        }
+        
+        private func createTextVisual(text: String, size: CGFloat, color: UIColor, position: SIMD3<Float>) -> ModelEntity {
+            let mesh = MeshResource.generateText(text, extrusionDepth: 0.002, font: .boldSystemFont(ofSize: size))
+            var mat = UnlitMaterial()
+            mat.color = .init(tint: color)
+            let entity = ModelEntity(mesh: mesh, materials: [mat])
+            
+            let bounds = entity.visualBounds(relativeTo: nil)
+            entity.position = position
+            entity.position.x -= bounds.center.x
+            entity.position.y -= bounds.center.y
+            entity.position.z -= bounds.center.z
+            
+            return entity
+        }
+        
+        private func startUpperBodySideToSideAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            let textEntity = createTextVisual(text: "↔", size: 0.05, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0, 0.06, 0.04])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.rotation = self.baseOrientation * simd_quatf(angle: .pi / 18, axis: [0, 1, 0])
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 1.0, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    var t2 = wrapper.transform
+                    t2.rotation = self.baseOrientation * simd_quatf(angle: -.pi / 18, axis: [0, 1, 0])
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 1.0, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+
+        private func startBreathingAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            
+            let textEntity = createTextVisual(text: "〰", size: 0.04, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0, 0.09, 0.04])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.scale = self.baseScale * 1.07
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 1.5, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    var t2 = wrapper.transform
+                    t2.scale = self.baseScale
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 1.5, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+
+        private func startArmStretchAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            let textEntity = createTextVisual(text: "↔", size: 0.05, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0, 0.08, 0.04])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.rotation = self.baseOrientation * simd_quatf(angle: .pi / 30, axis: [0, 0, 1]) // 6 degrees
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 1.0, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    var t2 = wrapper.transform
+                    t2.rotation = self.baseOrientation * simd_quatf(angle: -.pi / 30, axis: [0, 0, 1])
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 1.0, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+
+        private func startKneePumpAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            let textEntity = createTextVisual(text: "↕", size: 0.04, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0, 0.025, 0.04])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 0.8, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.translation.y = self.basePosition.y + 0.015
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 0.4, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    var t2 = wrapper.transform
+                    t2.translation.y = self.basePosition.y
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 0.4, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+
+        private func startSitStandAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            let textEntity = createTextVisual(text: "↕", size: 0.06, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0.06, 0.06, 0])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.translation.y = self.basePosition.y - 0.035
+                t1.rotation = self.baseOrientation * simd_quatf(angle: .pi / 12, axis: [1, 0, 0]) // öne eğilme
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 1.5, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    var t2 = wrapper.transform
+                    t2.translation.y = self.basePosition.y
+                    t2.rotation = self.baseOrientation
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 1.5, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+
+        private func startWalkingAnimation() {
+            guard cosmonautEntity != nil else { return }
+            let container = setupVisualContainer()
+            let textEntity = createTextVisual(text: "⬆", size: 0.04, color: UIColor(red: 0.0, green: 0.8, blue: 0.8, alpha: 1.0), position: [0, 0.01, 0.06])
+            textEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+            container.addChild(textEntity)
+            
+            exerciseAnimTimer = Timer.scheduledTimer(withTimeInterval: 1.2, repeats: true) { [weak self] _ in
+                guard let self = self, let wrapper = self.cosmonautEntity else { return }
+                var t1 = wrapper.transform
+                t1.translation.z = self.basePosition.z + 0.03
+                t1.rotation = self.baseOrientation * simd_quatf(angle: .pi / 36, axis: [0, 1, 0]) // 5 derece Y
+                wrapper.move(to: t1, relativeTo: wrapper.parent, duration: 0.6, timingFunction: .easeInOut)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    var t2 = wrapper.transform
+                    t2.translation.z = self.basePosition.z - 0.01
+                    t2.rotation = self.baseOrientation * simd_quatf(angle: -.pi / 36, axis: [0, 1, 0])
+                    wrapper.move(to: t2, relativeTo: wrapper.parent, duration: 0.6, timingFunction: .easeInOut)
+                }
+            }
+            exerciseAnimTimer?.fire()
+        }
+        
+        // MARK: - Helpers
+        private func applyMaterial(_ material: RealityKit.Material, to entity: Entity) {
+            if let modelEntity = entity as? ModelEntity, var model = modelEntity.model {
+                model.materials = model.materials.map { _ in material }
+                modelEntity.model = model
+            }
+            for child in entity.children {
+                applyMaterial(material, to: child)
+            }
         }
 
         // MARK: - Medication Overlay Builder

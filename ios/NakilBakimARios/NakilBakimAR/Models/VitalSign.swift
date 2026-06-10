@@ -62,10 +62,10 @@ struct VitalSign: Codable, Identifiable {
         _ container: KeyedDecodingContainer<CodingKeys>,
         key: CodingKeys
     ) throws -> Double? {
-        if let value = try container.decodeIfPresent(Double.self, forKey: key) {
+        if let value = try? container.decodeIfPresent(Double.self, forKey: key) {
             return value
         }
-        if let stringValue = try container.decodeIfPresent(String.self, forKey: key) {
+        if let stringValue = try? container.decodeIfPresent(String.self, forKey: key) {
             return Double(stringValue)
         }
         return nil
@@ -75,10 +75,10 @@ struct VitalSign: Codable, Identifiable {
         _ container: KeyedDecodingContainer<CodingKeys>,
         key: CodingKeys
     ) throws -> Int? {
-        if let value = try container.decodeIfPresent(Int.self, forKey: key) {
+        if let value = try? container.decodeIfPresent(Int.self, forKey: key) {
             return value
         }
-        if let stringValue = try container.decodeIfPresent(String.self, forKey: key) {
+        if let stringValue = try? container.decodeIfPresent(String.self, forKey: key) {
             return Int(stringValue)
         }
         return nil

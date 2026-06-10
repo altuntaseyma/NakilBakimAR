@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MedicationModuleView: View {
     @EnvironmentObject var api: APIService
+    var isPushed: Bool = false
     @State private var localError = ""
     @State private var showDetailedGuide = false
 
@@ -45,6 +46,7 @@ struct MedicationModuleView: View {
             }
         }
         .navigationTitle("İlaçlarım")
+        .toolbar(isPushed ? .hidden : .automatic, for: .tabBar)
         .sheet(isPresented: $showEnabizSheet) {
             EnabizSheet(medications: enabizMedications)
         }
@@ -92,23 +94,31 @@ struct MedicationModuleView: View {
     private var enabizCard: some View {
         SurfaceCard {
             HStack(spacing: 14) {
-                // e-Nabız logosu benzeri iyon
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 0.18, green: 0.52, blue: 0.85),
-                                    Color(red: 0.13, green: 0.38, blue: 0.72)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                // e-Nabız logosu
+                if let logoImg = UIImage(named: "e-nabiz-logo") {
+                    Image(uiImage: logoImg)
+                        .resizable()
+                        .scaledToFit()
                         .frame(width: 48, height: 48)
-                    Image(systemName: "cross.case.fill")
-                        .font(.title3)
-                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 0.18, green: 0.52, blue: 0.85),
+                                        Color(red: 0.13, green: 0.38, blue: 0.72)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "cross.case.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -433,7 +443,7 @@ struct EnabizMedication: Identifiable {
                 dose: "2 mg",
                 frequency: "Günde 2 kez",
                 timeSlots: ["08:00", "20:00"],
-                category: "İmmünosupressan",
+                category: "İmmünosupresan",
                 icon: "pill.fill",
                 color: Color(red: 0.55, green: 0.25, blue: 0.85)
             ),
@@ -442,7 +452,7 @@ struct EnabizMedication: Identifiable {
                 dose: "1000 mg",
                 frequency: "Günde 2 kez",
                 timeSlots: ["08:00", "20:00"],
-                category: "İmmünosupressan",
+                category: "İmmünosupresan",
                 icon: "capsule.fill",
                 color: Color(red: 0.45, green: 0.20, blue: 0.75)
             ),

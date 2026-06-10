@@ -19,7 +19,7 @@ struct PatientList: View {
                     } else if filteredPatients.isEmpty {
                         EmptyStateCard(
                             title: "Kayıtlı hasta bulunamadı",
-                            subtitle: "Filtreyi değiştir veya yeni hasta ekle."
+                            subtitle: "Filtreyi değiştirin veya yeni hasta ekleyin."
                         )
                     } else {
                         LazyVStack(spacing: 12) {
@@ -122,7 +122,7 @@ struct PatientList: View {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
-                TextField("Hasta ara...", text: $searchText)
+                TextField("Hasta arayın...", text: $searchText)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
             }
@@ -217,10 +217,16 @@ struct PatientList: View {
                     Label("Pasif", systemImage: "exclamationmark.triangle.fill")
                         .font(.caption.bold())
                         .foregroundStyle(InonuPalette.danger)
-                } else {
+                } else if let lastStr = patient.lastVitalRecordedAt,
+                          let lastDate = lastStr.parseIsoDate(),
+                          Date().timeIntervalSince(lastDate) <= 12 * 3600 {
                     Label("Vital bulgular stabil", systemImage: "checkmark.circle.fill")
                         .font(.caption.bold())
                         .foregroundStyle(InonuPalette.success)
+                } else {
+                    Label("Son 12 saattir vital girilmedi", systemImage: "exclamationmark.circle.fill")
+                        .font(.caption.bold())
+                        .foregroundStyle(InonuPalette.warning)
                 }
                 Spacer()
                 HStack(spacing: 4) {

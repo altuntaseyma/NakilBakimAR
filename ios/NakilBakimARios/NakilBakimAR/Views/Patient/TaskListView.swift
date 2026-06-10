@@ -7,11 +7,11 @@ struct TaskListView: View {
 
     var body: some View {
         SurfaceCard {
-            SectionCardTitle(text: "Gorevlerim", icon: "checklist")
+            SectionCardTitle(text: "Görevlerim", icon: "checklist")
             if api.tasksLoading && api.tasks.isEmpty {
                 ProgressView("Görevler yükleniyor...")
             } else if api.tasks.isEmpty {
-                Text("Gorev bulunamadi.")
+                Text("Görev bulunamadı.")
                     .font(AppTypography.helper)
                     .foregroundStyle(.secondary)
             } else {
@@ -22,7 +22,7 @@ struct TaskListView: View {
                         VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
                             Text(task.title).font(.subheadline)
                             if let scheduled = task.scheduledTime, !scheduled.isEmpty {
-                                Text("Planli: \(scheduled)")
+                                Text("Planlı: \(scheduled.formatIsoDate())")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
@@ -40,7 +40,7 @@ struct TaskListView: View {
                                     do {
                                         try await api.completeTask(taskId: task.id, patientProfileId: patientProfileId)
                                     } catch {
-                                        localError = "Gorev tamamlanamadi: \(error.localizedDescription)"
+                                        localError = "Görev tamamlanamadı: \(error.localizedDescription)"
                                     }
                                 }
                             }

@@ -349,9 +349,9 @@ struct PatientDetail: View {
             let hr = "\(v.heartRate ?? 0)"
             items.append(TimelineItem(
                 type: .vital,
-                title: "Vital Veri Karşılandı",
+                title: "Vital Veri Eklendi",
                 desc: "TA: \(bp) mmHg, Nabız: \(hr) bpm",
-                timeLabel: v.recordedAt ?? "",
+                timeLabel: v.recordedAt?.formatIsoDate() ?? "",
                 color: InonuPalette.vitalRose
             ))
         }
@@ -362,7 +362,7 @@ struct PatientDetail: View {
                 type: t.isCompleted ? .taskDone : .taskPending,
                 title: t.isCompleted ? "Görev Tamamlandı" : "Bekleyen Görev",
                 desc: t.title,
-                timeLabel: t.completedAt ?? t.scheduledTime ?? "",
+                timeLabel: (t.completedAt ?? t.scheduledTime)?.formatIsoDate() ?? "",
                 color: t.isCompleted ? InonuPalette.success : InonuPalette.navySoft
             ))
         }
