@@ -2,6 +2,9 @@
 
 Karaciger nakli pre-op ve post-op bakim asistani icin iOS (SwiftUI + ARKit) ve PostgreSQL backend projesi.
 
+## 🚀 Proje Demo Videosu
+- **[Uygulama İnceleme ve Canlı Demo Videosu İçin Tıklayın (Google Drive)](https://drive.google.com/file/d/147mgFYr44YGyQEgdhL6wu4EfDM7Fzrkx/view?usp=drive_link)**
+
 ## Proje Takip Dokumanlari
 - Adim adim gelistirme plani ve checklist: `docs/PROJECT_STEPS.md`
 - Durum ozeti ve tamamlanan isler: `docs/STATUS.md`
